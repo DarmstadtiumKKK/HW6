@@ -15,13 +15,13 @@ class TaskTracker:
 
     def perform(self, id_task):
         point = self.db_connection.cursor()
-        self.do_recursion(point, "per", id_task)
+        self._same_actions(point, "per", id_task)
         self.db_connection.commit()
         point.close()
 
     def complete(self, id_task):
         point = self.db_connection.cursor()
-        self.do_recursion(point, "com", id_task)
+        self._same_actions(point, "com", id_task)
         self.db_connection.commit()
         point.close()
 
