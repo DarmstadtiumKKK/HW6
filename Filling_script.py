@@ -27,16 +27,11 @@ class FillingDB:
 
     def fill_tasks(self):
         point = self.db_connection.cursor()
-
         for rand in self.gen_random():
-
             if rand[0] and self.end:
-
                 point.execute("INSERT INTO tasks (status, id_parent) VALUES (%s, %s);", (1, rand[1]))
             else:
                 point.execute("INSERT INTO tasks (status) VALUES (%s);", (1,))
-
-            # При каждом добавлении задачи увеличиваем дипазон рандома на еденицу
             self.end += 1
 
         self.db_connection.commit()
