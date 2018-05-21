@@ -43,23 +43,27 @@ class TaskTracker:
         self.db_connection.commit()
         point.close()
 
-    def do_recursion(self,point,func):
-        point.execute("SELECT id FROM tasks WHERE id_parent = %s;", (id_task,))
-        entries = point.fetchall()
-        self.db_connection.commit()
-        point.close()
-        for task_id in entries:
-            func(task_id)
-
     def perform(self, id_task):
         point = self.db_connection.cursor()
-        point.execute("UPDATE tasks SET status = %s, user_id = %s WHERE id = %s;",(2, self.user_id, id_task))
-        self.do_recursion(point, self.perform)
+        self.do_recursion(point, "per", id_task)
+        self.db_connection.commit()
+        point.close()
 
     def complete(self, id_task):
         point = self.db_connection.cursor()
-        point.execute("UPDATE tasks SET status = %s WHERE id = %s;", (3, id_task))
-        self.do_recursion(point, self.complete)
+        self.do_recursion(point, "com", id_task)
+        self.db_connection.commit()
+        point.close()
+
+    def _same_actions(self, point, name, id_task):
+        if name == "per":
+            point.execute("UPDATE tasks SET status = %s, user_id = %s WHERE id = %s;", (2, self.user_id, id_task))
+        else:
+            point.execute("UPDATE tasks SET status = %s WHERE id = %s;", (3, id_task))
+        point.execute("SELECT id FROM tasks WHERE id_parent = %s;", (id_task,))
+        entries = point.fetchall()
+        for task_id in entries:
+            self.do_recursion(point, name, task_id)
 
     def get_status(self, id_task):
         point = self.db_connection.cursor()
