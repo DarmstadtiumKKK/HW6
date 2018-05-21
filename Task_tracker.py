@@ -33,7 +33,7 @@ class TaskTracker:
         point.execute("SELECT id FROM tasks WHERE id_parent = %s;", (id_task,))
         entries = point.fetchall()
         for task_id in entries:
-            self.do_recursion(point, name, task_id)
+            self._same_actions(point, name, task_id)
 
     def get_status(self, id_task):
         point = self.db_connection.cursor()
